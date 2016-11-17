@@ -2,7 +2,8 @@ var Num=0;
 var activeNode=null;
 var Graph={
 
-	objects:[],
+	nodes:[],
+	lines:[],
 	field:document.getElementById('canvas'),
 	action:'',
 
@@ -32,18 +33,57 @@ var Graph={
 		}
 	},
 
-
-	drawLine:function(x1,y1,x2,y2){
+/*------------------Drawing methods-----------------*/
+	drawLine:function(x1,y1,x2,y2,weight,vector){
 		var ctx=Graph.getDrawingObject();
 
+		/* -------change start and end positions of vector RADIUS=RADIUS of node */
+		var radius=15;
+		var changeX=((x2-x1)/
+			Math.pow(
+				Math.pow(x2-x1,2)+
+				Math.pow(y2-y1,2),1/2
+			))*radius;
+		var changeY=((y2-y1)/
+			Math.pow(
+				Math.pow(x2-x1,2)+
+				Math.pow(y2-y1,2),1/2
+			))*radius;
+
+		x2=x2-changeX;
+		y2=y2-changeY;
+
+		x1=x1+changeX;
+		y1=y1+changeY;
+
+		/*------line----*/
 		ctx.beginPath();
-		ctx.fillStyle ="#000";
+		ctx.strokeStyle ='#000';
+		ctx.lineWidth = 2;
 		ctx.moveTo(x1,y1);
 		ctx.lineTo(x2,y2);
 		ctx.stroke();
 
+		/*------weight----*/
+		Graph.drawText(Math.abs(x2+x1)/2,Math.abs(y2+y1)/2,weight);
+
+		/*------vector----*/
+		if(vector)
+		{
+
+				var angle = Math.atan2(y2-y1,x2-x1);
+		ctx.beginPath();
+		ctx.strokeStyle ='#000';
+		ctx.lineWidth = 2;
+			ctx.moveTo(x2-10*Math.cos(angle-Math.PI/6),y2-10*Math.sin(angle-Math.PI/6));
+			ctx.lineTo(x2, y2);
+			ctx.lineTo(x2-10*Math.cos(angle+Math.PI/6),y2-10*Math.sin(angle+Math.PI/6));
+		ctx.stroke();
+
+		}
+		//Graph.reDrawAll();
 	},
-	drawCircle:function(x,y,radius,color='orange'){
+	drawCircle:function(x,y,radius, color = 'orange' ){
 		var ctx=Graph.getDrawingObject();
 
 		ctx.beginPath();
@@ -65,24 +105,38 @@ var Graph={
 	},
 
 	reDrawAll:function(){
-		for(i=0;i<Graph.objects.length;i++){
-			Graph.reDrawNode(Graph.objects[i].x,
-							 Graph.objects[i].y,
-							 Graph.objects[i].number);
+		for(i=0; i<Graph.nodes.length; i++){
+
+				Graph.reDrawNode(Graph.nodes[i].x,
+					Graph.nodes[i].y,
+					Graph.nodes[i].number);
+				//Graph.reDrawLines(i);
 
 		}
+
 
 	},
 	reDrawNode:function(x,y,number){
 		Graph.drawCircle(x,y,15);
 		(number.length>1 || number>=10) ? Graph.drawText(x-15/2-5,y+15/2,number) : Graph.drawText(x-15/2,y+15/2,number);
 	},
+	reDrawLines:function(indexNode){
 
+		for(i=0; i<Graph.lines.length; i++){
+
+					if(Graph.lines[i].from==indexNode || Graph.nodes[i].to==indexNode)
+					{
+
+					}
+
+		}
+	},
 	clearAll:function(){
 		ctx=Graph.getDrawingObject();
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		Num=0;
-		Graph.objects=[];
+		Graph.nodes=[];
+		Graph.lines=[];
 		Graph.action='none';
 		$('.controlls > button').removeClass('active');
 	},
@@ -100,41 +154,41 @@ var Graph={
 		Graph.drawCircle(x,y,15);
 		/* add to array */
 
-		Graph.objects.push({
+		Graph.nodes.push({
 			number:Num,
 			x:x,
-			y:y,
-			type:'node'
+			y:y
 		});
 		/* draw text in circle 1 or more symbol so draw a bit lefter */
-		(Graph.objects[Graph.objects.length-1].number.length>=10) ?
-			Graph.drawText(x-15/2-5,y+15/2,Graph.objects[Graph.objects.length-1].number) :
-			Graph.drawText(x-15/2,y+15/2,Graph.objects[Graph.objects.length-1].number);
+		(Graph.nodes[Graph.nodes.length-1].number.length>=10) ?
+			Graph.drawText(x-15/2-5,y+15/2,Graph.nodes[Graph.nodes.length-1].number) :
+			Graph.drawText(x-15/2,y+15/2,Graph.nodes[Graph.nodes.length-1].number);
 		Num++;
 
 
 	},
 
+	/*-------------Filter Node methods------------------------*/
 	getNode:function(x,y){
 
 
-		for(i=0;i<Graph.objects.length;i++)
+		for(i=0; i<Graph.nodes.length; i++)
 		{
-			if(	Graph.objects[i].x-15<=x &&
-				Graph.objects[i].x+15>=x &&
-				Graph.objects[i].y-15<=y &&
-				Graph.objects[i].y+15>=y   )
+			if(	Graph.nodes[i].x-15<=x &&
+				Graph.nodes[i].x+15>=x &&
+				Graph.nodes[i].y-15<=y &&
+				Graph.nodes[i].y+15>=y   )
 			{
-				return Graph.objects[i].number;
+				return Graph.nodes[i].number;
 			}
 
 		}
 		return -1;
 	},
 	findNodeByNumber:function(number) {
-		for(i=0;i<Graph.objects.length;i++)
+		for(i=0; i<Graph.nodes.length; i++)
 		{
-			if(Graph.objects[i].number==number) {
+			if(Graph.nodes[i].number==number) {
 				return i;
 			}
 		}
@@ -146,25 +200,25 @@ var Graph={
 
 		var index=Graph.findNodeByNumber(idNode);
 
-		Graph.clearNode(Graph.objects[index].x,Graph.objects[index].y);
-		Graph.objects.splice(index,1);
+		Graph.clearNode(Graph.nodes[index].x,Graph.nodes[index].y);
+		Graph.nodes.splice(index,1);
 
 	},
 	moveNode:function(idNode,toX,toY){
 
 
 		var index=Graph.findNodeByNumber(idNode);
-		Graph.clearNode(Graph.objects[index].x,Graph.objects[index].y);
+		Graph.clearNode(Graph.nodes[index].x,Graph.nodes[index].y);
 
-		Graph.objects[index].x=toX;
-		Graph.objects[index].y=toY;
+		Graph.nodes[index].x=toX;
+		Graph.nodes[index].y=toY;
 
 		Graph.reDrawAll();
 
 
 	},
 
-/* --------------------  */
+/* -----------------GUI methods----------  */
 	showSelf:function(){
 
 		var newWin = window.open("about:blank", "hello", "width=200,height=200");
@@ -172,7 +226,7 @@ var Graph={
 		newWin.document.write("<style>th, td, table {border:1px black solid;}</style>");
 		newWin.document.write("<table>");
 
-		var tableSize=Graph.objects.length;
+		var tableSize=Graph.nodes.length;
 
 		// for(i=0;i<tableSize;i++)
 		// {
@@ -183,13 +237,13 @@ var Graph={
 		// }
 
 			newWin.document.write("<tr><th>№</th>");
-			for(i=0;i<Graph.objects.length;i++){
-				newWin.document.write("<th>"+Graph.objects[i].number+"</th>");
+			for(i=0; i<Graph.nodes.length; i++){
+				newWin.document.write("<th>"+Graph.nodes[i].number+"</th>");
 			}
 			newWin.document.write("</tr>");
-			for(i=0;i<Graph.objects.length;i++){
+			for(i=0; i<Graph.nodes.length; i++){
 				newWin.document.write("<tr>");
-					newWin.document.write("<td>"+Graph.objects[i].number+"</td>");
+					newWin.document.write("<td>"+Graph.nodes[i].number+"</td>");
 				newWin.document.write("</tr>");
 			}
 
@@ -203,8 +257,33 @@ var Graph={
 
 
 };
+/*============================Lines Object=====================================*/
+var Lines={
 
+	update:function(){
+		//$('#popup-from > option, #popup-to > option').remove();
+		$('#popup-from, #popup-to').find('option').remove();
+		//$(to).find('option').remove();
 
+		for(i=0; i<Graph.nodes.length; i++){
+
+				$('#popup-from, #popup-to').append("<option>"+Graph.nodes[i].number+"</option>");
+
+		}
+
+	},
+	isLineInObjects:function(from,to){
+
+		for(i=0; i<Graph.lines.length; i++){
+			if(Graph.lines[i].from==from && Graph.lines[i].to==to)
+			{
+				return i;
+			}
+		}
+		return false;
+	},
+};
+/*============================Canvas click handlers=====================================*/
 Graph.field.onclick=function(e){
 
 	var x = e.offsetX==undefined?e.layerX:e.offsetX;
@@ -270,26 +349,26 @@ Graph.field.onmousemove=function(e){
 };
 
 
+/*============================Controlls handlers=====================================*/
+$('#create_node').click(function(){      Graph.activateButton(this,'create');  });
+$('#move_node').click(function(){        Graph.activateButton(this,'move');    });
+$('#clear').click(function(){            Graph.clearAll();                     });
+$('#del_node').click(function(){         Graph.activateButton(this,'delete');  });
+$('#show').click(function(){             Graph.showSelf();                     });
 
-$('#create_node').click(function(){
-	Graph.activateButton(this,'create');
-});
-$('#move_node').click(function(){
-	Graph.activateButton(this,'move');
-});
-$('#clear').click(function(){Graph.clearAll();});
-$('#del_node').click(function(){
-	Graph.activateButton(this,'delete');
-});
-$('#show').click(function(){
-	Graph.showSelf();
-});
 $('#create_line').click(function(){
+	Graph.activateButton(this,'line');
+	Lines.update();
+
 	$('.popup-background').show();
 	$('.popup-form').show();
 
+
+
+
 });
 /*============================popup=====================================*/
+
 $('.popup-background').hide();
 $('.popup-form').hide();
 
@@ -302,20 +381,44 @@ $('#popup-cancel').click(function(){
 });
 $('#popup-ok').click(function(){
 
+
 	var from=$('#popup-from').val();
 	var to=$('#popup-to').val();
 	var weight=$('#popup-weight').val();
-	var vektor=$('#popup-vektor').is(':checked');//true fasle
+	var vector=$('#popup-vector').is(':checked');
+
+	var nodeIndexFrom=Graph.findNodeByNumber(from);
+	var nodeIndexTo=Graph.findNodeByNumber(to);
+
+	console.log("System===nodes==================================================");
+	console.log(Graph.nodes);
+	console.log("System===lines==================================================");
+	console.log(Graph.lines);
+	if(Lines.isLineInObjects(nodeIndexFrom,nodeIndexTo)===false)
+	{
+
+		Graph.lines.push({
+			from:nodeIndexFrom,
+			to:nodeIndexTo,
+			weight:weight,
+			vector:vector,
+		});
+	}
+	else
+	{
+		var indexLine=Lines.isLineInObjects(nodeIndexFrom,nodeIndexTo);
+		Graph.lines[indexLine].weight=weight;
+		Graph.lines[indexLine].vector=vector;
+
+	}
+	Graph.drawLine( Graph.nodes[nodeIndexFrom].x,
+		Graph.nodes[nodeIndexFrom].y,
+		Graph.nodes[nodeIndexTo].x,
+		Graph.nodes[nodeIndexTo].y,
+		weight,
+		vector                         );
 
 
-
-	var indexFrom=Graph.findNodeByNumber(from);
-	var indexTo=Graph.findNodeByNumber(to);
-	console.log(Graph.objects);
-	Graph.drawLine( Graph.objects[indexFrom].x,
-					Graph.objects[indexFrom].y,
-					Graph.objects[indexTo].x,
-					Graph.objects[indexTo].y   );
 
 
 

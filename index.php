@@ -14,19 +14,21 @@
 	<table>
 		<tr>
 			<td>From:</td>
-			<td><input type="number" id="popup-from"/></td>
+			<td><select id="popup-from">
+				</select></td>
 		</tr>
 		<tr>
 			<td>To:</td>
-			<td><input type="number" id="popup-to"/></td>
+			<td><select id="popup-to">
+				</select></td>
 		</tr>
 		<tr>
 			<td>Weight:</td>
 			<td><input type="number" id="popup-weight"/></td>
 		</tr>
 		<tr>
-			<td>Vektor:</td>
-			<td><input type="checkbox" id="popup-vektor"/></td>
+			<td>Vector:</td>
+			<td><input type="checkbox" id="popup-vector" checked/></td>
 		</tr>
 		<tr>
 			<td><input type="button" value="Ok" id="popup-ok"/></td>

@@ -360,7 +360,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 					continue;
 				}
 
-				// Recurse if we're merging plain objects or arrays
+				// Recurse if we're merging plain nodes or arrays
 				if ( deep && copy && ( jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)) ) ) {
 					if ( copyIsArray ) {
 						copyIsArray = false;
@@ -370,7 +370,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 						clone = src && jQuery.isPlainObject(src) ? src : {};
 					}
 
-					// Never move original objects, clone them
+					// Never move original nodes, clone them
 					target[ name ] = jQuery.extend( deep, clone, copy );
 
 				// Don't bring in undefined values
@@ -515,7 +515,7 @@ jQuery.extend({
 	isPlainObject: function( obj ) {
 		// Must be an Object.
 		// Because of IE, we also have to check the presence of the constructor property.
-		// Make sure that DOM nodes and window objects don't pass through, as well
+		// Make sure that DOM nodes and window nodes don't pass through, as well
 		if ( !obj || jQuery.type(obj) !== "object" || obj.nodeType || jQuery.isWindow( obj ) ) {
 			return false;
 		}
@@ -528,7 +528,7 @@ jQuery.extend({
 				return false;
 			}
 		} catch ( e ) {
-			// IE8,9 Will throw exceptions on certain host objects #9897
+			// IE8,9 Will throw exceptions on certain host nodes #9897
 			return false;
 		}
 
@@ -762,7 +762,7 @@ jQuery.extend({
 		var value, key, ret = [],
 			i = 0,
 			length = elems.length,
-			// jquery objects are treated as arrays
+			// jquery nodes are treated as arrays
 			isArray = elems instanceof jQuery || length !== undefined && typeof length === "number" && ( ( length > 0 && elems[ 0 ] && elems[ length -1 ] ) || length === 0 || jQuery.isArray( elems ) ) ;
 
 		// Go through the array, translating each of the items to their
@@ -790,7 +790,7 @@ jQuery.extend({
 		return ret.concat.apply( [], ret );
 	},
 
-	// A global GUID counter for objects
+	// A global GUID counter for nodes
 	guid: 1,
 
 	// Bind a function to a context, optionally partially applying any
@@ -913,7 +913,7 @@ if ( rnotwhite.test( "\xA0" ) ) {
 	trimRight = /[\s\xA0]+$/;
 }
 
-// All jQuery objects should point back to these
+// All jQuery nodes should point back to these
 rootjQuery = jQuery(document);
 
 // Cleanup functions for the document ready method
@@ -1634,7 +1634,7 @@ jQuery.extend({
 	// attempt to add expando properties to them.
 	noData: {
 		"embed": true,
-		// Ban all objects except for Flash (which handle expandos)
+		// Ban all nodes except for Flash (which handle expandos)
 		"object": "clsid:D27CDB6E-AE6D-11cf-96B8-444553540000",
 		"applet": true
 	},
@@ -1653,7 +1653,7 @@ jQuery.extend({
 			internalKey = jQuery.expando,
 			getByName = typeof name === "string",
 
-			// We have to handle DOM nodes and JS objects differently because IE6-7
+			// We have to handle DOM nodes and JS nodes differently because IE6-7
 			// can't GC object references properly across the DOM-JS boundary
 			isNode = elem.nodeType,
 
@@ -1661,7 +1661,7 @@ jQuery.extend({
 			// attached directly to the object so GC can occur automatically
 			cache = isNode ? jQuery.cache : elem,
 
-			// Only defining an ID for JS objects if its cache already exists allows
+			// Only defining an ID for JS nodes if its cache already exists allows
 			// the code to shortcut on the same path as a DOM node with no cache
 			id = isNode ? elem[ internalKey ] : elem[ internalKey ] && internalKey,
 			isEvents = name === "events";
@@ -1685,7 +1685,7 @@ jQuery.extend({
 		if ( !cache[ id ] ) {
 			cache[ id ] = {};
 
-			// Avoids exposing jQuery metadata on plain JS objects when the object
+			// Avoids exposing jQuery metadata on plain JS nodes when the object
 			// is serialized using JSON.stringify
 			if ( !isNode ) {
 				cache[ id ].toJSON = jQuery.noop;
@@ -1817,7 +1817,7 @@ jQuery.extend({
 		}
 
 		// Browsers that fail expando deletion also refuse to delete expandos on
-		// the window, but it will allow it on all other JS objects; other browsers
+		// the window, but it will allow it on all other JS nodes; other browsers
 		// don't care
 		// Ensure that `cache` is not a window object #10080
 		if ( jQuery.support.deleteExpando || !cache.setInterval ) {
@@ -2845,7 +2845,7 @@ jQuery.event = {
 			t, tns, type, namespaces, handleObj,
 			handleObjIn, quick, handlers, special;
 
-		// Don't attach events to noData or text/comment nodes (allow plain objects tho)
+		// Don't attach events to noData or text/comment nodes (allow plain nodes tho)
 		if ( elem.nodeType === 3 || elem.nodeType === 8 || !types || !handler || !(elemData = jQuery._data( elem )) ) {
 			return;
 		}
