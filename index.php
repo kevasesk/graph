@@ -37,6 +37,31 @@
 	</table>
 
 </div>
+<!--ToDo
+-change Draw object
+-scale field
+-move lines when moved node
+-delete line
+-show table
+-from table -> graph
+-from Object to Array
+-dinamic table < --- > graph
+
+
+------save/load graph
+-algoritms
+
+
+
+
+
+
+
+
+--->
+
+
+
 
 
 <div class="controlls container">
@@ -57,7 +82,8 @@
 
 
 <div class="container">
-	<canvas id="canvas" width="1000" height="500">
+
+    <canvas id="canvas" width="1000" height="500">
 	</canvas>
 
 </div>

@@ -4,7 +4,6 @@ var Graph={
 
 	nodes:[],
 	lines:[],
-	field:document.getElementById('canvas'),
 	action:'',
 
 
@@ -26,111 +25,7 @@ var Graph={
 
 
 	},
-	getDrawingObject:function(){
-		//var canvas = document.getElementById('canvas');
-		if (Graph.field.getContext) {
-			return Graph.field.getContext('2d');
-		}
-	},
 
-/*------------------Drawing methods-----------------*/
-	drawLine:function(x1,y1,x2,y2,weight,vector){
-		var ctx=Graph.getDrawingObject();
-
-		/* -------change start and end positions of vector RADIUS=RADIUS of node */
-		var radius=15;
-		var changeX=((x2-x1)/
-			Math.pow(
-				Math.pow(x2-x1,2)+
-				Math.pow(y2-y1,2),1/2
-			))*radius;
-		var changeY=((y2-y1)/
-			Math.pow(
-				Math.pow(x2-x1,2)+
-				Math.pow(y2-y1,2),1/2
-			))*radius;
-
-		x2=x2-changeX;
-		y2=y2-changeY;
-
-		x1=x1+changeX;
-		y1=y1+changeY;
-
-		/*------line----*/
-		ctx.beginPath();
-		ctx.strokeStyle ='#000';
-		ctx.lineWidth = 2;
-		ctx.moveTo(x1,y1);
-		ctx.lineTo(x2,y2);
-		ctx.stroke();
-
-		/*------weight----*/
-		Graph.drawText(Math.abs(x2+x1)/2,Math.abs(y2+y1)/2,weight);
-
-		/*------vector----*/
-		if(vector)
-		{
-
-				var angle = Math.atan2(y2-y1,x2-x1);
-		ctx.beginPath();
-		ctx.strokeStyle ='#000';
-		ctx.lineWidth = 2;
-			ctx.moveTo(x2-10*Math.cos(angle-Math.PI/6),y2-10*Math.sin(angle-Math.PI/6));
-			ctx.lineTo(x2, y2);
-			ctx.lineTo(x2-10*Math.cos(angle+Math.PI/6),y2-10*Math.sin(angle+Math.PI/6));
-		ctx.stroke();
-
-		}
-		//Graph.reDrawAll();
-	},
-	drawCircle:function(x,y,radius, color = 'orange' ){
-		var ctx=Graph.getDrawingObject();
-
-		ctx.beginPath();
-		ctx.fillStyle = color;
-		(color=='white') ?
-			ctx.arc(x,y,radius+2,0,Math.PI*2,true) :
-			ctx.arc(x,y,radius,0,Math.PI*2,true);
-		ctx.fill();
-	},
-	drawText:function(x,y,text){
-		var ctx=Graph.getDrawingObject();
-
-		ctx.fillStyle = "#6869FF";
-		ctx.strokeStyle = "#6869FF";
-		ctx.font = "italic 20px Arial";
-		ctx.fillText(text, x, y);
-		//ctx.font = 'bold 30px sans-serif';
-		//ctx.strokeText("Stroke text", 20, 100);
-	},
-
-	reDrawAll:function(){
-		for(i=0; i<Graph.nodes.length; i++){
-
-				Graph.reDrawNode(Graph.nodes[i].x,
-					Graph.nodes[i].y,
-					Graph.nodes[i].number);
-				//Graph.reDrawLines(i);
-
-		}
-
-
-	},
-	reDrawNode:function(x,y,number){
-		Graph.drawCircle(x,y,15);
-		(number.length>1 || number>=10) ? Graph.drawText(x-15/2-5,y+15/2,number) : Graph.drawText(x-15/2,y+15/2,number);
-	},
-	reDrawLines:function(indexNode){
-
-		for(i=0; i<Graph.lines.length; i++){
-
-					if(Graph.lines[i].from==indexNode || Graph.nodes[i].to==indexNode)
-					{
-
-					}
-
-		}
-	},
 	clearAll:function(){
 		ctx=Graph.getDrawingObject();
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -140,18 +35,11 @@ var Graph={
 		Graph.action='none';
 		$('.controlls > button').removeClass('active');
 	},
-	clearNode:function(x,y){
-		var ctx=Graph.getDrawingObject();
-
-		/* draw circle with radius 15 */
-		Graph.drawCircle(x,y,15,'white');
-	},
-
-	drawNode:function(x,y){
+    createNode:function(x,y){
 		//var ctx=Graph.getDrawingObject();
 
 		/* draw circle with radius 15 */
-		Graph.drawCircle(x,y,15);
+        Draw.circle(x,y,15);
 		/* add to array */
 
 		Graph.nodes.push({
@@ -161,8 +49,8 @@ var Graph={
 		});
 		/* draw text in circle 1 or more symbol so draw a bit lefter */
 		(Graph.nodes[Graph.nodes.length-1].number.length>=10) ?
-			Graph.drawText(x-15/2-5,y+15/2,Graph.nodes[Graph.nodes.length-1].number) :
-			Graph.drawText(x-15/2,y+15/2,Graph.nodes[Graph.nodes.length-1].number);
+            Draw.text(x-15/2-5,y+15/2,Graph.nodes[Graph.nodes.length-1].number) :
+            Draw.text(x-15/2,y+15/2,Graph.nodes[Graph.nodes.length-1].number);
 		Num++;
 
 
@@ -200,7 +88,7 @@ var Graph={
 
 		var index=Graph.findNodeByNumber(idNode);
 
-		Graph.clearNode(Graph.nodes[index].x,Graph.nodes[index].y);
+        Draw.clearNode(Graph.nodes[index].x,Graph.nodes[index].y);
 		Graph.nodes.splice(index,1);
 
 	},
@@ -208,12 +96,12 @@ var Graph={
 
 
 		var index=Graph.findNodeByNumber(idNode);
-		Graph.clearNode(Graph.nodes[index].x,Graph.nodes[index].y);
+        Draw.clearNode(Graph.nodes[index].x,Graph.nodes[index].y);
 
 		Graph.nodes[index].x=toX;
 		Graph.nodes[index].y=toY;
 
-		Graph.reDrawAll();
+        Draw.reDrawAll();
 
 
 	},
@@ -258,7 +146,7 @@ var Graph={
 
 };
 /*============================Lines Object=====================================*/
-var Lines={
+var FormLines={
 
 	update:function(){
 		//$('#popup-from > option, #popup-to > option').remove();
@@ -283,6 +171,133 @@ var Lines={
 		return false;
 	},
 };
+
+
+var Draw={
+    field:document.getElementById('canvas'),
+    getDrawingObject:function(){
+        //var canvas = document.getElementById('canvas');
+        if (Draw.field.getContext) {
+            return Draw.field.getContext('2d');
+        }
+    },
+    /*------ figures-----*/
+    line:function(x1,y1,x2,y2,weight,vector){
+        var ctx=Draw.getDrawingObject();
+
+        /* -------change start and end positions of vector RADIUS=RADIUS of node */
+        var radius=15;
+        var changeX=((x2-x1)/
+            Math.pow(
+                Math.pow(x2-x1,2)+
+                Math.pow(y2-y1,2),1/2
+            ))*radius;
+        var changeY=((y2-y1)/
+            Math.pow(
+                Math.pow(x2-x1,2)+
+                Math.pow(y2-y1,2),1/2
+            ))*radius;
+
+        x2=x2-changeX;
+        y2=y2-changeY;
+
+        x1=x1+changeX;
+        y1=y1+changeY;
+
+        /*------line----*/
+        ctx.beginPath();
+        ctx.strokeStyle ='#000';
+        ctx.lineWidth = 2;
+        ctx.moveTo(x1,y1);
+        ctx.lineTo(x2,y2);
+        ctx.stroke();
+
+        /*------weight----*/
+        Draw.text(Math.abs(x2+x1)/2,Math.abs(y2+y1)/2,weight);
+
+        /*------vector----*/
+        if(vector)
+        {
+
+            var angle = Math.atan2(y2-y1,x2-x1);
+            ctx.beginPath();
+            ctx.strokeStyle ='#000';
+            ctx.lineWidth = 2;
+            ctx.moveTo(x2-10*Math.cos(angle-Math.PI/6),y2-10*Math.sin(angle-Math.PI/6));
+            ctx.lineTo(x2, y2);
+            ctx.lineTo(x2-10*Math.cos(angle+Math.PI/6),y2-10*Math.sin(angle+Math.PI/6));
+            ctx.stroke();
+
+        }
+        //Graph.reDrawAll();
+    },
+    circle:function(x,y,radius, color = 'orange' ){
+        var ctx=Draw.getDrawingObject();
+
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        (color=='white') ?
+            ctx.arc(x,y,radius+2,0,Math.PI*2,true) :
+            ctx.arc(x,y,radius,0,Math.PI*2,true);
+        ctx.fill();
+    },
+    text:function(x,y,text){
+        var ctx=Draw.getDrawingObject();
+
+        ctx.fillStyle = "#6869FF";
+        ctx.strokeStyle = "#6869FF";
+        ctx.font = "italic 20px Arial";
+        ctx.fillText(text, x, y);
+        //ctx.font = 'bold 30px sans-serif';
+        //ctx.strokeText("Stroke text", 20, 100);
+    },
+    circle:function(x,y,radius, color = 'orange' ){
+        var ctx=Draw.getDrawingObject();
+
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        (color=='white') ?
+            ctx.arc(x,y,radius+2,0,Math.PI*2,true) :
+            ctx.arc(x,y,radius,0,Math.PI*2,true);
+        ctx.fill();
+    },
+
+    reDrawNode:function(x,y,number){
+        Draw.circle(x,y,15);
+        (number.length>1 || number>=10) ?
+            Draw.text(x-15/2-5,y+15/2,number) :
+            Draw.text(x-15/2,y+15/2,number);
+    },
+    reDrawLines:function(indexNode){
+        /*
+        for(i=0; i<Graph.lines.length; i++){
+
+            if(Graph.lines[i].from==indexNode || Graph.nodes[i].to==indexNode)
+            {
+
+            }
+
+        }*/
+    },
+    reDrawAll:function(){
+        for(i=0; i<Graph.nodes.length; i++){
+
+            Draw.reDrawNode(Graph.nodes[i].x,
+                Graph.nodes[i].y,
+                Graph.nodes[i].number);
+            //Graph.reDrawLines(i);
+        }
+    },
+
+    clearNode:function(x,y){
+        var ctx=Draw.getDrawingObject();
+
+        /* draw white circle with radius 15 */
+        Draw.circle(x,y,15,'white');
+    },
+
+};
+
 /*============================Canvas click handlers=====================================*/
 Graph.field.onclick=function(e){
 
@@ -358,7 +373,7 @@ $('#show').click(function(){             Graph.showSelf();                     }
 
 $('#create_line').click(function(){
 	Graph.activateButton(this,'line');
-	Lines.update();
+    FormLines.update();
 
 	$('.popup-background').show();
 	$('.popup-form').show();
@@ -394,7 +409,7 @@ $('#popup-ok').click(function(){
 	console.log(Graph.nodes);
 	console.log("System===lines==================================================");
 	console.log(Graph.lines);
-	if(Lines.isLineInObjects(nodeIndexFrom,nodeIndexTo)===false)
+	if(FormLines.isLineInObjects(nodeIndexFrom,nodeIndexTo)===false)
 	{
 
 		Graph.lines.push({
@@ -406,12 +421,12 @@ $('#popup-ok').click(function(){
 	}
 	else
 	{
-		var indexLine=Lines.isLineInObjects(nodeIndexFrom,nodeIndexTo);
+		var indexLine=FormLines.isLineInObjects(nodeIndexFrom,nodeIndexTo);
 		Graph.lines[indexLine].weight=weight;
 		Graph.lines[indexLine].vector=vector;
 
 	}
-	Graph.drawLine( Graph.nodes[nodeIndexFrom].x,
+	Draw.line( Graph.nodes[nodeIndexFrom].x,
 		Graph.nodes[nodeIndexFrom].y,
 		Graph.nodes[nodeIndexTo].x,
 		Graph.nodes[nodeIndexTo].y,
