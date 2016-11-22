@@ -27,24 +27,28 @@
 	border-radius:5px;
 	padding:5px;
 }
+.hide
+{
+	display: none;
+}
 
 /*     popup            */
-.popup-background
-{
-	background-color: beige;
-	opacity: 0.5;
-	position: fixed;
-	width: 100%;
-	height: 100%;
-}
-.popup-form
-{
-	position: absolute;
-	width: 300px;
-	background-color: white;
-	border: 1px grey solid;
-	padding: 20px;
-	border-radius: 4px;
-	top: 100px;
-	left: 40%;
-}
+/*.popup-background*/
+/*{*/
+	/*background-color: beige;*/
+	/*opacity: 0.5;*/
+	/*position: fixed;*/
+	/*width: 100%;*/
+	/*height: 100%;*/
+/*}*/
+/*.popup-form*/
+/*{*/
+	/*position: absolute;*/
+	/*width: 300px;*/
+	/*background-color: white;*/
+	/*border: 1px grey solid;*/
+	/*padding: 20px;*/
+	/*border-radius: 4px;*/
+	/*top: 100px;*/
+	/*left: 40%;*/
+/*}*/
