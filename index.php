@@ -37,7 +37,7 @@
 
 </div>
 
-<div class="container">
+<div class="container" style="overflow: hidden; border:1px solid black;">
     <canvas id="canvas" width="1000" height="500">
 	</canvas>
 </div>

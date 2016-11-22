@@ -1,11 +1,12 @@
 var Num=0;
 var activeNode=null;
+var scrollHorizontal=false;
 
 var Graph={
 
 	nodes:[],
 	//lines:[],
-	action:'',
+	action:'none',
 
 	isLineIn:function(indexToLine,indexNode){
 
@@ -449,6 +450,12 @@ Draw.field.onmousedown=function(e){
 		Graph.getLine(x,y);
 
 	}
+	if(Graph.action=='none')
+	{
+		scrollHorizontal=true;
+		X=x;
+		Y=y;
+	}
 
 };
 Draw.field.onmouseup=function(e){
@@ -458,7 +465,14 @@ Draw.field.onmouseup=function(e){
 
 	activeNode=null;
 	//console.log('up '+x+' '+y);
+	if(Graph.action=='none')
+	{
+		scrollHorizontal=false;
+	}
 };
+
+var X=0;
+var Y=0;
 Draw.field.onmousemove=function(e){
 
 	var x = e.offsetX==undefined?e.layerX:e.offsetX;
@@ -474,8 +488,29 @@ Draw.field.onmousemove=function(e){
 		Graph.moveNode(activeNode,x,y);
 
 	}
-};
+	if(Graph.action=='none' && scrollHorizontal)
+	{
+		console.log('scroll '+x+" "+y);
+		$(Draw.field).css({
+			'top':'+='+(y-Y)+'px',
+			'left':'+='+(x-X)+'px',
+		});
 
+	}
+};
+scroll=0;
+Draw.field.onmousewheel=function(e) {
+
+	scroll = scroll + e.deltaY / 500;
+	console.log('wheeeel  ' + scroll);
+		if(1+scroll>0.4) {
+
+			$(this).css({
+				'transform': 'scale(calc(1 + ' + (scroll) + '))'
+			});
+		}
+
+};
 
 /*============================Controlls handlers=====================================*/
 $('#create_node').click(function(){      Graph.activateButton(this,'create');     });
